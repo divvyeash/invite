@@ -5,32 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>House Prayer Invitation</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #fffaf0; overflow: hidden; font-family: 'Georgia', serif; }
-        #wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; perspective: 1000px; }
+        /* Animated Background */
+        body, html { 
+            margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Georgia', serif; 
+            background: radial-gradient(circle, #fffaf0 0%, #f3e5ab 100%);
+            animation: glow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.1); }
+        }
+
+        #wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; perspective: 1000px; flex-direction: column; }
 
         /* The Envelope Container */
-        .envelope { position: relative; width: 280px; height: 180px; background: #b8860b; cursor: pointer; transition: 0.5s; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .envelope { position: relative; width: 300px; height: 200px; background: #b8860b; cursor: pointer; box-shadow: 0 30px 50px rgba(0,0,0,0.3); border-radius: 0 0 5px 5px; }
         
         /* The Top Flap */
-        .flap { position: absolute; top: 0; width: 0; height: 0; border-left: 140px solid transparent; border-right: 140px solid transparent; border-top: 100px solid #d4af37; transform-origin: top; transition: transform 0.6s ease; z-index: 3; }
+        .flap { 
+            position: absolute; top: 0; width: 0; height: 0; 
+            border-left: 150px solid transparent; border-right: 150px solid transparent; 
+            border-top: 110px solid #d4af37; transform-origin: top; 
+            transition: transform 0.8s ease; z-index: 5; 
+        }
 
-        /* The Letter (Poster) inside */
-        .letter { position: absolute; bottom: 0; left: 10px; width: 260px; height: 160px; background: white; transition: all 1s ease-in-out; z-index: 1; overflow: hidden; opacity: 0.5; }
-        .letter img { width: 100%; height: 100%; object-fit: cover; }
+        /* The Poster (Hidden Inside) */
+        .letter { 
+            position: absolute; bottom: 5px; left: 10px; width: 280px; height: 180px; 
+            background: white; transition: all 1.2s ease-in-out; z-index: 2; 
+            opacity: 0; transform: translateY(0);
+        }
+        .letter img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* "Click Me" Text */
-        .hint { position: absolute; bottom: -60px; width: 100%; text-align: center; color: #b8860b; font-weight: bold; animation: bounce 2s infinite; }
+        .hint { margin-top: 40px; color: #b8860b; font-weight: bold; letter-spacing: 2px; animation: bounce 2s infinite; }
 
-        /* Open State Animations */
-        .open .flap { transform: rotateX(180deg); z-index: 0; }
-        .open .letter { transform: translateY(-120px) scale(1.5); opacity: 1; z-index: 10; }
+        /* Open State */
+        .open .flap { transform: rotateX(180deg); z-index: 1; }
+        .open .letter { opacity: 1; transform: translateY(-130px) scale(1.3); z-index: 10; }
+        .open .hint { opacity: 0; }
 
-        /* Final Full Screen View */
-        #full-poster-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: none; justify-content: center; align-items: center; z-index: 100; animation: fadeIn 2s forwards; }
-        #full-poster-overlay img { max-width: 95%; max-height: 90vh; border: 8px solid #fff; box-shadow: 0 0 30px rgba(0,0,0,0.1); }
+        /* Full Screen Fade-In */
+        #full-view { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(255,255,255,0.98); display: none; 
+            justify-content: center; align-items: center; z-index: 100; 
+            animation: finalFade 1.5s forwards;
+        }
+        #full-view img { max-width: 95%; max-height: 90vh; box-shadow: 0 0 40px rgba(184, 134, 11, 0.4); border: 10px solid white; }
 
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes finalFade { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -39,13 +64,13 @@
         <div class="envelope" id="env" onclick="startReveal()">
             <div class="flap"></div>
             <div class="letter">
-                <img src="https://i.postimg.cc/qvD17Fhk/photo-6161043935606803833-y.jpg" alt="Invite">
+                <img src="https://i.postimg.cc/qvD17Fhk/photo-6161043935606803833-y.jpg">
             </div>
-            <div class="hint">TAP TO OPEN</div>
         </div>
+        <div class="hint" id="hint-text">TAP TO OPEN INVITATION</div>
     </div>
 
-    <div id="full-poster-overlay">
+    <div id="full-view">
         <img src="https://i.postimg.cc/qvD17Fhk/photo-6161043935606803833-y.jpg">
     </div>
 
@@ -57,15 +82,21 @@
         function startReveal() {
             const env = document.getElementById('env');
             const music = document.getElementById('invite-music');
-            const overlay = document.getElementById('full-poster-overlay');
+            const fullView = document.getElementById('full-view');
+            const hint = document.getElementById('hint-text');
 
-            env.classList.add('open');
-            music.play();
+            if(!env.classList.contains('open')) {
+                env.classList.add('open');
+                hint.style.display = 'none';
+                
+                // Play music on click
+                music.play().catch(e => console.log("Music blocked or file missing"));
 
-            // Transition to full screen poster after 2 seconds
-            setTimeout(() => {
-                overlay.style.display = 'flex';
-            }, 2500);
+                // Show the full poster after the animation
+                setTimeout(() => {
+                    fullView.style.display = 'flex';
+                }, 2500);
+            }
         }
     </script>
 </body>
