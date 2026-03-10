@@ -5,60 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>House Prayer Invitation</title>
     <style>
-        /* Animated Background */
+        /* Animated Sparkle Background */
         body, html { 
-            margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Georgia', serif; 
-            background: radial-gradient(circle, #fffaf0 0%, #f3e5ab 100%);
-            animation: glow 10s ease-in-out infinite alternate;
+            margin: 0; padding: 0; height: 100%; overflow: hidden; 
+            font-family: 'Georgia', serif; 
+            background: radial-gradient(circle at center, #2c1e02 0%, #000000 100%);
         }
 
-        @keyframes glow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.1); }
+        /* Floating Particles Effect */
+        .bg-sparkles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            animation: move-it 50s linear infinite; opacity: 0.5; z-index: -1;
         }
 
-        #wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; perspective: 1000px; flex-direction: column; }
+        @keyframes move-it { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-        /* The Envelope Container */
-        .envelope { position: relative; width: 300px; height: 200px; background: #b8860b; cursor: pointer; box-shadow: 0 30px 50px rgba(0,0,0,0.3); border-radius: 0 0 5px 5px; }
+        #wrapper { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; perspective: 1000px; }
+
+        /* Enhanced 3D Envelope */
+        .envelope { 
+            position: relative; width: 320px; height: 200px; 
+            background: #8b6508; /* Darker Gold Base */
+            cursor: pointer; box-shadow: 0 50px 100px rgba(0,0,0,0.8); 
+            border-radius: 0 0 10px 10px; border: 1px solid #d4af37;
+        }
         
-        /* The Top Flap */
+        /* The Top Flap with Shadow */
         .flap { 
             position: absolute; top: 0; width: 0; height: 0; 
-            border-left: 150px solid transparent; border-right: 150px solid transparent; 
-            border-top: 110px solid #d4af37; transform-origin: top; 
-            transition: transform 0.8s ease; z-index: 5; 
+            border-left: 160px solid transparent; border-right: 160px solid transparent; 
+            border-top: 120px solid #d4af37; transform-origin: top; 
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; 
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
-        /* The Poster (Hidden Inside) */
+        /* The Poster Hidden Inside */
         .letter { 
-            position: absolute; bottom: 5px; left: 10px; width: 280px; height: 180px; 
+            position: absolute; bottom: 10px; left: 15px; width: 290px; height: 180px; 
             background: white; transition: all 1.2s ease-in-out; z-index: 2; 
-            opacity: 0; transform: translateY(0);
+            opacity: 0; transform: translateY(0); box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
         .letter img { width: 100%; height: 100%; object-fit: contain; }
 
-        .hint { margin-top: 40px; color: #b8860b; font-weight: bold; letter-spacing: 2px; animation: bounce 2s infinite; }
+        /* Typography */
+        .hint { margin-top: 50px; color: #d4af37; font-weight: bold; letter-spacing: 3px; font-size: 0.9rem; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+        
+        .credits { position: fixed; bottom: 20px; color: rgba(212, 175, 55, 0.6); font-size: 0.8rem; letter-spacing: 1px; font-style: italic; }
 
-        /* Open State */
+        /* Reveal Logic */
         .open .flap { transform: rotateX(180deg); z-index: 1; }
-        .open .letter { opacity: 1; transform: translateY(-130px) scale(1.3); z-index: 10; }
-        .open .hint { opacity: 0; }
+        .open .letter { opacity: 1; transform: translateY(-150px) scale(1.4); z-index: 10; }
+        .open .hint, .open .credits { opacity: 0; transition: 0.5s; }
 
-        /* Full Screen Fade-In */
+        /* Final Full Poster View */
         #full-view { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.98); display: none; 
-            justify-content: center; align-items: center; z-index: 100; 
+            background: #000; display: none; justify-content: center; align-items: center; z-index: 100; 
             animation: finalFade 1.5s forwards;
         }
-        #full-view img { max-width: 95%; max-height: 90vh; box-shadow: 0 0 40px rgba(184, 134, 11, 0.4); border: 10px solid white; }
+        #full-view img { max-width: 100%; max-height: 100vh; box-shadow: 0 0 100px rgba(212, 175, 55, 0.3); }
 
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
         @keyframes finalFade { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <div class="bg-sparkles"></div>
 
     <div id="wrapper">
         <div class="envelope" id="env" onclick="startReveal()">
@@ -67,7 +81,8 @@
                 <img src="https://i.postimg.cc/qvD17Fhk/photo-6161043935606803833-y.jpg">
             </div>
         </div>
-        <div class="hint" id="hint-text">TAP TO OPEN INVITATION</div>
+        <div class="hint" id="hint-text">TAP TO OPEN</div>
+        <div class="credits">Made by Divvyeash Kumarasen</div>
     </div>
 
     <div id="full-view">
@@ -75,7 +90,7 @@
     </div>
 
     <audio id="invite-music">
-        <source src="music.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -83,19 +98,17 @@
             const env = document.getElementById('env');
             const music = document.getElementById('invite-music');
             const fullView = document.getElementById('full-view');
-            const hint = document.getElementById('hint-text');
 
             if(!env.classList.contains('open')) {
                 env.classList.add('open');
-                hint.style.display = 'none';
                 
-                // Play music on click
-                music.play().catch(e => console.log("Music blocked or file missing"));
+                // Triggers music play on click
+                music.play().catch(e => console.log("Music blocked"));
 
-                // Show the full poster after the animation
+                // Switches to full poster view after 2.5 seconds
                 setTimeout(() => {
                     fullView.style.display = 'flex';
-                }, 2500);
+                }, 2800);
             }
         }
     </script>
